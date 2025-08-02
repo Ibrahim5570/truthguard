@@ -206,7 +206,7 @@ def log_feedback(headline, pred, conf, is_correct, correction=None, reason=""):
 
 # Main App
 def main():
-    st.markdown('<p class="header-text">TruthGuard: AI-Powered Fake News Detection</p>', unsafe_allow_html=True)
+    st.markdown('<h1 style="color: #ffffff;" class="header-text">TruthGuard: AI-Powered Fake News Detection</h1>', unsafe_allow_html=True)
     st.markdown("""
     <p style="font-size: 1.1rem; color: #4a5568; margin-bottom: 2rem;">
     Verify news headlines with our advanced AI system. Help improve the model by providing feedback!
@@ -701,5 +701,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
