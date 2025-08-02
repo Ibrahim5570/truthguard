@@ -15,10 +15,6 @@ import time
 from pathlib import Path
 import subprocess
 
-installed_packages = subprocess.check_output(['pip', 'freeze']).decode('utf-8')
-st.text("Installed Packages:\n" + installed_packages)
-
-
 # Set page configuration
 st.set_page_config(
     page_title="TruthGuard - Fake News Detector",
@@ -665,3 +661,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
