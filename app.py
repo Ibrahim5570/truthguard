@@ -228,7 +228,8 @@ def main():
         Found a discrepancy and want to help fix it? Click "✅ Correct" or "❌ Incorrect" to help TruthGuard learn from your knowledge
         and Click 'Retrain Model to have the Model Learn the error and to see some fun balloons!'
         """)
-    st.markdown('<h1 class="header-text; color: #ff0000;">PRONE TO MISTAKES! PLEASE VERIFY FROM OTHER SOURCES!!!<br></h1>',unsafe_allow_html=True)
+
+    st.markdown('<h3 class="header-text; color: #ff0000;">PRONE TO MISTAKES! PLEASE VERIFY FROM OTHER SOURCES!!!<br></h3>',unsafe_allow_html=True)
 
     # TAB 1: Analyze Headline
     with tab1:
@@ -687,6 +688,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
