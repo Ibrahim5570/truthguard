@@ -200,8 +200,7 @@ def log_feedback(headline, pred, conf, is_correct, correction=None, reason=""):
 
 # Main App
 def main():
-    st.markdown('<h1 class="header-text; color: #ff0000;">PRONE TO MISTAKES! PLEASE VERIFY FROM OTHER SOURCES!!!<br></h1>',unsafe_allow_html=True)
-    st.markdown('<h1 class="header-text; color: #e0b0ff;">TruthGuard: AI-Powered Fake News Detection</h1>', unsafe_allow_html=True)
+        st.markdown('<h1 class="header-text; color: #e0b0ff;">TruthGuard: AI-Powered Fake News Detection</h1>', unsafe_allow_html=True)
     st.markdown("""
     <p style="font-size: 1.1rem; color: #4a5568; margin-bottom: 2rem;">
     Verify news headlines with our advanced AI system. Help improve the model by providing feedback!
@@ -229,6 +228,7 @@ def main():
         Found a discrepancy and want to help fix it? Click "✅ Correct" or "❌ Incorrect" to help TruthGuard learn from your knowledge
         and Click 'Retrain Model to have the Model Learn the error and to see some fun balloons!'
         """)
+        st.markdown('<h1 class="header-text; color: #ff0000;">PRONE TO MISTAKES! PLEASE VERIFY FROM OTHER SOURCES!!!<br></h1>',unsafe_allow_html=True)
 
     # TAB 1: Analyze Headline
     with tab1:
@@ -687,6 +687,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
