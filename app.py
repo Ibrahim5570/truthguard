@@ -147,7 +147,7 @@ def clean_text(text):
 # Rule-based filters
 ABSURD_KEYWORDS = [
     'dances naked', 'organizes sex', 'organises sex', 'organise sex', 'secretly flees', 'hitler was right',
-    'aliens invade',
+    'aliens invade', 'is racist', 'is not racist', 'rapist', 'rape'
     'moon is cheese', 'earth is flat', 'birds are drones', 'trump dances naked', 'organize sex',
     'queen elizabeth 100th birthday', 'queen elizabeth returns from the dead',
     'masks cause oxygen loss', 'vaccines cause autism', '5g causes coronavirus',
@@ -607,3 +607,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
