@@ -217,7 +217,7 @@ def main():
         ### Simple 4-Step Process:
         
         **1️⃣ Enter a Headline**  
-        Type or paste any news headline you want to verify
+        Type or paste any news headline you want to verify and press Ctrl+Enter
         
         **2️⃣ Analyze**  
         Click the "🔍 Analyze Headline" button to get results
@@ -226,7 +226,8 @@ def main():
         The system will show if it's likely Real or Fake News with confidence percentage
         
         **4️⃣ Improve the Model**  
-        Click "✅ Correct" or "❌ Incorrect" to help TruthGuard learn from your knowledge
+        Found a discrepancy and want to help fix it? Click "✅ Correct" or "❌ Incorrect" to help TruthGuard learn from your knowledge
+        and Click 'Retrain Model to have the Model Learn the error and to see some fun balloons!'
         """)
 
     # TAB 1: Analyze Headline
@@ -573,13 +574,13 @@ def main():
         st.markdown("""
             <div style="background-color: white; border-radius: 8px; padding: 15px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
                 <h4 style="color: #2d3748; margin-top: 0;">1️⃣ Enter a Headline</h4>
-                <p>Copy any news headline you're unsure about into the text box on the Analyze tab and click 'Analyze Headline'.</p>
+                <p>Copy any news headline you're unsure about into the text box on the Analyze tab, press Ctrl+Enter and click 'Analyze Headline'.</p>
                 
                 <h4 style="color: #2d3748; margin-top: 0;">2️⃣ Review the Results</h4>
-                <p>The system will show whether it's likely Real or Fake News with a confidence percentage.</p>
+                <p>The system will show whether it's likely Real or Fake News with a confidence percentage which will help you become better informed.</p>
                 
                 <h4 style="color: #2d3748; margin-top: 0;">3️⃣ Provide Feedback</h4>
-                <p>If you know the answer, click 'Correct' or 'Incorrect' to help improve the model.</p>
+                <p>If you find any discrepancies, click 'Correct' or 'Incorrect' to help improve the model.</p>
                 
                 <h4 style="color: #2d3748; margin-top: 0;">4️⃣ Retrain the Model</h4>
                 <p>When enough feedback is collected, click 'Retrain Model' to update the system with community knowledge.</p>
@@ -685,6 +686,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
