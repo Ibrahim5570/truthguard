@@ -13,6 +13,11 @@ import pandas as pd
 import plotly.express as px
 import time
 from pathlib import Path
+import subprocess
+
+installed_packages = subprocess.check_output(['pip', 'freeze']).decode('utf-8')
+st.text("Installed Packages:\n" + installed_packages)
+
 
 # Set page configuration
 st.set_page_config(
@@ -653,3 +658,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
