@@ -570,7 +570,7 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
-         st.markdown("""
+        st.markdown("""
             <div style="background-color: white; border-radius: 8px; padding: 15px; border: 1px solid #e2e8f0; margin-bottom: 25px;">
                 <h4 style="color: #2d3748; margin-top: 0;">1️⃣ Enter a Headline</h4>
                 <p>Copy any news headline you're unsure about into the text box on the Analyze tab and click 'Analyze Headline'.</p>
@@ -685,6 +685,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
