@@ -571,7 +571,7 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
-       with st.expander("ℹ️ How to use TruthGuard )", expanded = True):
+    with st.expander("ℹ️ How to use TruthGuard )", expanded = True):
         st.markdown("""
         ### Simple 4-Step Process:
         
@@ -688,6 +688,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
