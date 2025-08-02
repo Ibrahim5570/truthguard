@@ -213,7 +213,6 @@ def main():
     </p>
     """, unsafe_allow_html=True)
     
-    st.markdown('<h3 class="header-text; color: #ff0000;">PRONE TO MISTAKES! PLEASE VERIFY FROM OTHER SOURCES!!!<br></h3>', unsafe_allow_html=True)
     
     # Add instructions expander
     with st.expander("ℹ️ How to use TruthGuard (click for instructions)", expanded=True):
@@ -240,6 +239,8 @@ def main():
     if not vectorizer or not model:
         st.error("Failed to load model. Please check if model files exist.")
         return
+
+    st.markdown('<h3 class="header-text; color: #ff0000;">PRONE TO MISTAKES! PLEASE VERIFY FROM OTHER SOURCES!!!<br></h3>', unsafe_allow_html=True)
 
     tab1, tab2, tab3 = st.tabs(["🔍 Analyze Headline", "📊 Model Insights", "ℹ️ About"])
     
@@ -700,3 +701,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
