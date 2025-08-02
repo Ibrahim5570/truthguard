@@ -571,22 +571,23 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
-        with st.expander("ℹ️ How to Use TruthGuard", expanded=True):
-            st.markdown("""
-            <div style="background-color: white; padding: 15px; border-radius: 8px;">
-                <h4 style="color: #2d3748; margin-top: 0;">1️⃣ Enter a Headline</h4>
-                <p>Copy any news headline you're unsure about into the text box.</p>
+       with st.expander("ℹ️ How to use TruthGuard )", expanded = True):
+        st.markdown("""
+        ### Simple 4-Step Process:
         
-                <h4 style="color: #2d3748; margin-top: 0;">2️⃣ Review the Results</h4>
-                <p>The system will show whether it's likely Real or Fake News with a confidence percentage.</p>
+        **1️⃣ Enter a Headline**  
+        Type or paste any news headline you want to verify and press Ctrl+Enter
         
-                <h4 style="color: #2d3748; margin-top: 0;">3️⃣ Provide Feedback</h4>
-                <p>If you find any discrepancies, click 'Correct' or 'Incorrect' to help improve the model.</p>
+        **2️⃣ Analyze**  
+        Click the "🔍 Analyze Headline" button to get results
         
-                <h4 style="color: #2d3748; margin-top: 0;">4️⃣ Retrain the Model</h4>
-                <p>When enough feedback is collected, click 'Retrain Model' to update the system with community knowledge.</p>
-            </div>
-            """)
+        **3️⃣ Verify Results**  
+        The system will show if it's likely Real or Fake News with confidence percentage
+        
+        **4️⃣ Improve the Model**  
+        Found a discrepancy and want to help fix it? Click "✅ Correct" or "❌ Incorrect" to help TruthGuard learn from your knowledge
+        and Click 'Retrain Model to have the Model Learn the error and to see some fun balloons!'
+        """)
         
         # Technical details
         st.subheader("Technical Details")
