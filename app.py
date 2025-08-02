@@ -586,7 +586,7 @@ def main():
                 <h4 style="color: #2d3748; margin-top: 0;">4️⃣ Retrain the Model</h4>
                 <p>When enough feedback is collected, click 'Retrain Model' to update the system with community knowledge.</p>
             </div>
-            """, unsafe_allow_html=True)
+            """)
         
         # Technical details
         st.subheader("Technical Details")
@@ -687,6 +687,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
