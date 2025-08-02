@@ -1,56 +1,48 @@
-import os
-import sys
-import json
+# train.py
 import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import confusion_matrix, classification_report
 import joblib
-from datetime import datetime
+import matplotlib.pyplot as plt
+import seaborn as sns
 import re
-
-# Determine environment and set appropriate model directory
-IS_STREAMLIT_CLOUD = "STREAMLIT_SERVER_PORT" in os.environ or os.getenv("HOSTNAME", "").startswith("service-")
-MODEL_DIR = os.environ.get("MODEL_DIR", "/tmp/models" if IS_STREAMLIT_CLOUD else "models")
-
-print(f"DEBUG: IS_STREAMLIT_CLOUD = {IS_STREAMLIT_CLOUD}")
-print(f"DEBUG: MODEL_DIR = {MODEL_DIR}")
-
-# Create directory if needed
-os.makedirs(MODEL_DIR, exist_ok=True)
-print(f"DEBUG: Created model directory at {MODEL_DIR}")
-
-# Text cleaning function
-def clean_text(text):
-    text = str(text).lower()
-    text = re.sub(r'[^a-zA-Z\s!?]+', '', text)
-    text = re.sub(r'\s+', ' ', text).strip()
-    return text
+import os
+import json
 
 # -------------------------------
-# 1. Load the main dataset
+# 1. Load & Prepare Data
 # -------------------------------
-print("🔄 Loading main dataset...")
-try:
-    df = pd.read_csv('data/fake_news_data.csv')
-    print(f"✅ Loaded {len(df)} examples from main dataset")
-except Exception as e:
-    print(f"❌ Error loading main dataset: {str(e)}")
-    sys.exit(1)
+print("📂 Loading dataset: FakeNewsNet.csv...")
+df = pd.read_csv('FakeNewsNet.csv', names=['title', 'url', 'domain', 'tweet_num', 'real'], header=0)
+df.dropna(subset=['title'], inplace=True)
+df['title'] = df['title'].astype(str)
+df['real'] = df['real'].astype(int)
 
 # -------------------------------
-# 2. Preprocess the data
+# 2. Data Augmentation: Add Known Misinformation
 # -------------------------------
-print("🧹 Preprocessing data...")
-df['title'] = df['title'].apply(clean_text)
-df = df[df['title'].str.strip() != '']
-df = df.dropna(subset=['title'])
-print(f"✅ Preprocessed data. Remaining examples: {len(df)}")
+augmented_examples = [
+    {"title": "CDC confirms masks cause oxygen loss in children", "real": 0},
+    {"title": "Scientists say climate change is just a natural cycle", "real": 0},
+    {"title": "Apple unveils iPhone 16 with holographic display", "real": 0},
+    {"title": "Queen Elizabeth II celebrates 100th birthday", "real": 0},
+    {"title": "5G networks spread coronavirus", "real": 0},
+    {"title": "Vaccines cause autism, says new study", "real": 0},
+    {"title": "Bill Gates implants microchips via vaccines", "real": 0},
+    {"title": "NASA faked the moon landing again", "real": 0},
+    {"title": "Trump wins Nobel Peace Prize for ending Ukraine war", "real": 0},
+    {"title": "Eating bleach cures COVID-19", "real": 0},
+    {"title": "Aliens invade Poland and say Hitler was right", "real": 0},
+    {"title": "Beyonce and Jay-Z expecting fourth child via surrogate", "real": 0}
+]
+
+df_aug = pd.DataFrame(augmented_examples)
+df = pd.concat([df, df_aug], ignore_index=True)
+print(f"✅ Dataset after augmentation: {len(df)} samples")
 
 # -------------------------------
 # 3. Load User Feedback (if available)
@@ -94,33 +86,66 @@ if os.path.exists('data/correct_predictions.jsonl'):
         print(f"✅ Added {len(df_correct)} high-confidence correct predictions")
 
 # -------------------------------
-# 5. Split the data
+# 5. Balance Dataset
 # -------------------------------
-print("SplitOptions data into train and test sets...")
-X = df['title'].values
-y = df['real'].values
+from sklearn.utils import resample
+df_fake = df[df['real'] == 0]
+df_real = df[df['real'] == 1]
+n_samples = min(len(df_fake), len(df_real))
+df_fake_balanced = resample(df_fake, n_samples=n_samples, random_state=42)
+df_real_balanced = resample(df_real, n_samples=n_samples, random_state=42)
+df_balanced = pd.concat([df_fake_balanced, df_real_balanced])
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-print(f"✅ Split data: {len(X_train)} training examples, {len(X_test)} test examples")
-
-# -------------------------------
-# 6. Vectorize the text
-# -------------------------------
-print("Vectorizerizing text with TF-IDF...")
-vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1, 2))
-X_train_vec = vectorizer.fit_transform(X_train).toarray()
-X_test_vec = vectorizer.transform(X_test).toarray()
-print(f"✅ Vectorized text. Feature count: {X_train_vec.shape[1]}")
+print(f"✅ Balanced dataset: {len(df_balanced)} samples (50/50)")
 
 # -------------------------------
-# 7. Save the vectorizer
+# 6. Enhanced Text Cleaning
 # -------------------------------
-vectorizer_path = os.path.join(MODEL_DIR, 'tfidf_vectorizer.pkl')
-joblib.dump(vectorizer, vectorizer_path)
-print(f"✅ Saved vectorizer to {vectorizer_path}")
+def clean_text(text):
+    if not isinstance(text, str):
+        return ""
+    text = text.lower()
+    text = re.sub(r'[^a-zA-Z\s!?]+', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+df_balanced['cleaned_text'] = df_balanced['title'].apply(clean_text)
+X = df_balanced['cleaned_text']
+y = df_balanced['real']
 
 # -------------------------------
-# 8. Define the neural network
+# 7. TF-IDF Vectorization
+# -------------------------------
+print("🔄 Vectorizing text (TF-IDF)...")
+vectorizer = TfidfVectorizer(
+    max_features=10000,
+    stop_words='english',
+    ngram_range=(1, 3),
+    min_df=1,
+    max_df=0.8
+)
+X_vec = vectorizer.fit_transform(X).toarray()
+y_vec = y.values
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X_vec, y_vec, test_size=0.2, random_state=42, stratify=y_vec
+)
+
+# Convert to tensors
+X_train_t = torch.FloatTensor(X_train)
+X_test_t = torch.FloatTensor(X_test)
+y_train_t = torch.FloatTensor(y_train).unsqueeze(1)
+y_test_t = torch.FloatTensor(y_test).unsqueeze(1)
+
+train_data = torch.utils.data.TensorDataset(X_train_t, y_train_t)
+test_data = torch.utils.data.TensorDataset(X_test_t, y_test_t)
+
+train_loader = torch.utils.data.DataLoader(train_data, batch_size=64, shuffle=True)
+test_loader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=False)
+
+# -------------------------------
+# 8. Model with Dropout
 # -------------------------------
 class NewsClassifier(nn.Module):
     def __init__(self, input_size):
@@ -138,109 +163,120 @@ class NewsClassifier(nn.Module):
             nn.Linear(32, 1),
             nn.Sigmoid()
         )
-    
+
     def forward(self, x):
         return self.network(x)
 
-# -------------------------------
-# 9. Train the model
-# -------------------------------
-print("🏋️ Training neural network...")
-input_size = X_train_vec.shape[1]
+# Initialize
+input_size = X_train.shape[1]
 model = NewsClassifier(input_size)
 criterion = nn.BCELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# Convert to PyTorch tensors
-X_train_tensor = torch.FloatTensor(X_train_vec)
-y_train_tensor = torch.FloatTensor(y_train).view(-1, 1)
-X_test_tensor = torch.FloatTensor(X_test_vec)
-y_test_tensor = torch.FloatTensor(y_test).view(-1, 1)
+# -------------------------------
+# 9. Training Loop
+# -------------------------------
+epochs = 2
+train_losses, test_losses = [], []
+train_accs, test_accs = [], []
 
-# Training loop
-num_epochs = 50
-batch_size = 64
-best_val_loss = float('inf')
-patience = 5
-patience_counter = 0
-
-for epoch in range(num_epochs):
-    # Training
+print("🚀 Starting training...\n")
+for epoch in range(epochs):
     model.train()
-    epoch_loss = 0
-    for i in range(0, len(X_train_tensor), batch_size):
-        batch_X = X_train_tensor[i:i+batch_size]
-        batch_y = y_train_tensor[i:i+batch_size]
-        
+    running_loss = 0.0
+    correct = 0
+    total = 0
+
+    for inputs, labels in train_loader:
         optimizer.zero_grad()
-        outputs = model(batch_X)
-        loss = criterion(outputs, batch_y)
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
-        
-        epoch_loss += loss.item()
-    
-    # Validation
+
+        running_loss += loss.item()
+        predicted = (outputs > 0.5).float()
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+    train_loss = running_loss / len(train_loader)
+    train_acc = correct / total
+
+    # Evaluation
     model.eval()
+    test_loss = 0.0
+    correct = 0
+    total = 0
     with torch.no_grad():
-        val_outputs = model(X_test_tensor)
-        val_loss = criterion(val_outputs, y_test_tensor)
-    
-    # Early stopping
-    if val_loss < best_val_loss:
-        best_val_loss = val_loss
-        patience_counter = 0
-        # Save the best model
-        model_path = os.path.join(MODEL_DIR, 'fake_news_model.pth')
-        torch.save(model.state_dict(), model_path)
-        print(f"✅ Saved best model to {model_path}")
-    else:
-        patience_counter += 1
-    
-    if patience_counter >= patience:
-        print(f"🛑 Early stopping at epoch {epoch+1}")
-        break
-    
-    if (epoch + 1) % 10 == 0:
-        print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss/len(X_train_tensor):.4f}, Val Loss: {val_loss:.4f}')
+        for inputs, labels in test_loader:
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            test_loss += loss.item()
+            predicted = (outputs > 0.5).float()
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+    test_loss = test_loss / len(test_loader)
+    test_acc = correct / total
+
+    train_losses.append(train_loss)
+    test_losses.append(test_loss)
+    train_accs.append(train_acc)
+    test_accs.append(test_acc)
+
+    print(f"Epoch {epoch+1}/{epochs} - "
+          f"Train Loss: {train_loss:.4f}, Acc: {train_acc:.4f} | "
+          f"Test Loss: {test_loss:.4f}, Acc: {test_acc:.4f}")
 
 # -------------------------------
-# 10. Evaluate the model
+# 10. Evaluate & Plot Results
 # -------------------------------
-print("📊 Evaluating model performance...")
+# Accuracy & Loss Plots
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+plt.plot(train_accs, label='Train Accuracy')
+plt.plot(test_accs, label='Test Accuracy')
+plt.title('Model Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+
+plt.subplot(1, 2, 2)
+plt.plot(train_losses, label='Train Loss')
+plt.plot(test_losses, label='Test Loss')
+plt.title('Model Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# Confusion Matrix
 model.eval()
 with torch.no_grad():
-    y_pred = model(X_test_tensor)
-    y_pred = (y_pred > 0.5).float().numpy()
+    y_pred = model(X_test_t)
+    y_pred_labels = (y_pred > 0.5).float().numpy().flatten()
 
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
+cm = confusion_matrix(y_test, y_pred_labels)
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+            xticklabels=['Fake', 'Real'],
+            yticklabels=['Fake', 'Real'])
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
 
-print(f"✅ Model evaluation:")
-print(f"   Accuracy: {accuracy:.4f}")
-print(f"   Precision: {precision:.4f}")
-print(f"   Recall: {recall:.4f}")
-print(f"   F1 Score: {f1:.4f}")
+# Classification Report
+print("📋 Classification Report:")
+print(classification_report(y_test, y_pred_labels, target_names=['Fake', 'Real']))
 
 # -------------------------------
-# 11. Save model metrics
+# 11. Save Model
 # -------------------------------
-metrics = {
-    'date': datetime.now().strftime("%Y-%m-%d"),
-    'accuracy': round(accuracy * 100, 2),
-    'precision': round(precision * 100, 2),
-    'recall': round(recall * 100, 2),
-    'f1': round(f1 * 100, 2)
-}
-
-# Save to metrics file
-metrics_file = 'data/model_metrics.jsonl'
-os.makedirs(os.path.dirname(metrics_file), exist_ok=True)
-with open(metrics_file, 'a') as f:
-    f.write(json.dumps(metrics) + '\n')
-
-print(f"✅ Saved model metrics to {metrics_file}")
-
-print("🎉 Training complete!")
+os.makedirs('models', exist_ok=True)
+joblib.dump(vectorizer, 'models/tfidf_vectorizer.pkl')
+torch.save(model.state_dict(), 'models/fake_news_model.pth')
+print("✅ Final model saved to 'models/'")
