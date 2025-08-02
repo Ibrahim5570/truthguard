@@ -117,7 +117,7 @@ if 'current_confidence' not in st.session_state:
 def load_model():
     try:
         # Debug: Show where we're trying to load from
-        st.write(f"DEBUG: Loading model from {MODEL_DIR} (IS_STREAMLIT_CLOUD={IS_STREAMLIT_CLOUD})")
+        #st.write(f"DEBUG: Loading model from {MODEL_DIR} (IS_STREAMLIT_CLOUD={IS_STREAMLIT_CLOUD})")
         
         vectorizer = joblib.load(os.path.join(MODEL_DIR, 'tfidf_vectorizer.pkl'))
         input_size = len(vectorizer.get_feature_names_out())
@@ -239,8 +239,6 @@ def main():
     if not vectorizer or not model:
         st.error("Failed to load model. Please check if model files exist.")
         return
-
-    st.markdown('<h3 class="header-text; color: #ff0000;">PRONE TO MISTAKES! PLEASE VERIFY FROM OTHER SOURCES!!!<br></h3>', unsafe_allow_html=True)
 
     tab1, tab2, tab3 = st.tabs(["🔍 Analyze Headline", "📊 Model Insights", "ℹ️ About"])
     
@@ -408,6 +406,8 @@ def main():
                         st.error(f"Model directory: {MODEL_DIR}")
         else:
             st.info("No corrections available yet. Provide feedback to enable retraining.")
+    
+    st.markdown('<h3 class="header-text; color: #ff0000;">PRONE TO MISTAKES! PLEASE VERIFY FROM OTHER SOURCES!!!<br></h3>', unsafe_allow_html=True)
     
     # TAB 2: Model Insights
     with tab2:
@@ -701,4 +701,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
