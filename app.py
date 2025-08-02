@@ -670,7 +670,7 @@ def main():
             </p>
             <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
                 <div style="background-color: #e6f7ff; color: #0891b2; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem;">
-                    <a href="github.com/Ibrahim5570/truthguard">🌐 github.com/Ibrahim5570/truthguard</a>
+                   <a href="https://github.com/Ibrahim5570/truthguard" target="_blank">🌐 github.com/Ibrahim5570/truthguard</a>
                 </div>
             </div>
         </div>
@@ -688,6 +688,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
