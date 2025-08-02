@@ -19,7 +19,7 @@ TruthGuard is an AI-powered tool that helps users verify news headlines and comb
 
 ## 🚀 Try It Live
 
-# COMING SOON!
+[# Try it NOW!](https://truthguard-ibrahim5570.streamlit.app)
 
 ## 🖥️ Run Locally
 
@@ -122,5 +122,6 @@ TruthGuard/
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Ibrahim5570)
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ibrahim-abdullah-220917319)
+
 
 
