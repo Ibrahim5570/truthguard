@@ -2,7 +2,6 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://truthguard.streamlit.app)
 [![GitHub Repo stars](https://img.shields.io/github/stars/Ibrahim5570/truthguard?style=social)](https://github.com/Ibrahim5570/truthguard)
-![GitHub license](https://img.shields.io/github/license/yourusername/truthguard)
 
 ![TruthGuard Screenshot](screenshot.png)
 
@@ -122,3 +121,4 @@ TruthGuard/
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Ibrahim5570)
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ibrahim-abdullah-220917319)
+
