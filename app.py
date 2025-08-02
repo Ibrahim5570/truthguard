@@ -554,6 +554,23 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
+        with st.expander("ℹ️ How to use TruthGuard )", expanded = True):
+            st.markdown("""
+            ### Simple 4-Step Process:
+            
+            **1️⃣ Enter a Headline**  
+            Type or paste any news headline you want to verify and press Ctrl+Enter
+            
+            **2️⃣ Analyze**  
+            Click the "🔍 Analyze Headline" button to get results
+            
+            **3️⃣ Verify Results**  
+            The system will show if it's likely Real or Fake News with confidence percentage
+            
+            **4️⃣ Improve the Model**  
+            Found a discrepancy and want to help fix it? Click "✅ Correct" or "❌ Incorrect" to help TruthGuard learn from your knowledge
+            and Click 'Retrain Model to have the Model Learn the error and to see some fun balloons!'
+            """)
         # How it works
         st.subheader("How TruthGuard Works")
         st.markdown("""
@@ -570,24 +587,6 @@ def main():
             <p style= "color: #000000;">Every time you provide feedback, our model learns and improves. This community-driven approach makes TruthGuard more accurate with each correction.</p>
         </div>
         """, unsafe_allow_html=True)
-
-    with st.expander("ℹ️ How to use TruthGuard )", expanded = True):
-        st.markdown("""
-        ### Simple 4-Step Process:
-        
-        **1️⃣ Enter a Headline**  
-        Type or paste any news headline you want to verify and press Ctrl+Enter
-        
-        **2️⃣ Analyze**  
-        Click the "🔍 Analyze Headline" button to get results
-        
-        **3️⃣ Verify Results**  
-        The system will show if it's likely Real or Fake News with confidence percentage
-        
-        **4️⃣ Improve the Model**  
-        Found a discrepancy and want to help fix it? Click "✅ Correct" or "❌ Incorrect" to help TruthGuard learn from your knowledge
-        and Click 'Retrain Model to have the Model Learn the error and to see some fun balloons!'
-        """)
         
         # Technical details
         st.subheader("Technical Details")
@@ -688,6 +687,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
 
 
