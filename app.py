@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import torch
 import joblib
-from predictor import predict
+from predict import predict
 
 # App configuration
 st.set_page_config(page_title="TruthGuard 🛡️", layout="centered")
@@ -30,3 +30,4 @@ if st.button("Predict"):
         
         st.success(f"✅ Prediction: **{prediction.upper()}**")
         st.info(f"📊 Confidence: **{confidence}%**")
+
