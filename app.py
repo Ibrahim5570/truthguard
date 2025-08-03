@@ -1,3 +1,4 @@
+# app.py
 import streamlit as st
 import torch
 import joblib
@@ -14,7 +15,6 @@ import plotly.express as px
 import time
 from pathlib import Path
 import sys  # Added to ensure correct Python executable is used
-
 # Set page configuration
 st.set_page_config(
     page_title="TruthGuard - Fake News Detector",
@@ -22,7 +22,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-
 # Custom CSS with adjusted colors
 st.markdown("""
 <style>
@@ -94,7 +93,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
 # Initialize session state
 if 'show_correction_form' not in st.session_state:
     st.session_state.show_correction_form = False
@@ -104,7 +102,6 @@ if 'current_prediction' not in st.session_state:
     st.session_state.current_prediction = None
 if 'current_confidence' not in st.session_state:
     st.session_state.current_confidence = None
-
 # Load model with caching
 @st.cache_resource
 def load_model():
@@ -136,14 +133,12 @@ def load_model():
     except Exception as e:
         st.error(f"❌ Error loading model: {str(e)}")
         return None, None
-
 # Text cleaning function
 def clean_text(text):
     text = str(text).lower()
     text = re.sub(r'[^a-zA-Z\s!?]+', '', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
-
 # Rule-based filters
 ABSURD_KEYWORDS = [
     'dances naked', 'organizes sex', 'organises sex', 'organise sex', 'secretly flees', 'hitler was right',
@@ -155,10 +150,8 @@ ABSURD_KEYWORDS = [
     'global warming hoax', 'scientists deny climate change', 'eating bleach cures covid',
     'bill gates microchip vaccine', 'iphone 16 holographic display', 'time machine'
 ]
-
 def is_absurd(headline):
     return any(keyword in headline.lower() for keyword in ABSURD_KEYWORDS)
-
 # Prediction function
 def predict_news(headline, vectorizer, model):
     if is_absurd(headline):
@@ -174,7 +167,6 @@ def predict_news(headline, vectorizer, model):
     prediction = "Real News" if prob > 0.5 else "Fake News"
     confidence = (prob if prob > 0.5 else 1 - prob) * 100
     return prediction, confidence
-
 # Feedback logging
 def log_feedback(headline, pred, conf, is_correct, correction=None, reason=""):
     entry = {
@@ -190,8 +182,7 @@ def log_feedback(headline, pred, conf, is_correct, correction=None, reason=""):
     filename = 'data/correct_predictions.jsonl' if is_correct else 'data/feedback.jsonl'
     os.makedirs('data', exist_ok=True)
     with open(filename, 'a', encoding='utf-8') as f:
-        f.write(json.dumps(entry) + '\n')
-
+        f.write(json.dumps(entry) + '\n') # Ensure newline
 # Main App
 def main():
     st.markdown('<h1 style="color: #ffffff;" class="header-text;">TruthGuard: AI-Powered Fake News Detection</h1>', unsafe_allow_html=True)
@@ -200,17 +191,13 @@ def main():
     Verify news headlines with our advanced AI system. Help improve the model by providing feedback!
     </p>
     """, unsafe_allow_html=True)
-
     vectorizer, model = load_model()
     if not vectorizer or not model:
         st.stop()
-
     tab1, tab2, tab3 = st.tabs(["🔍 Analyze Headline", "📊 Model Insights", "ℹ️ About"])
-
     # TAB 1: Analyze Headline
     with tab1:
         st.markdown('<p class="subheader-text">Check a News Headline</p>', unsafe_allow_html=True)
-
         # Example headlines
         st.markdown("""
         <div style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
@@ -222,14 +209,12 @@ def main():
             </ul>
         </div>
         """, unsafe_allow_html=True)
-
         headline = st.text_area(
             "Enter a news headline to verify:",
             height=120,
             placeholder="Paste a news headline here...",
             label_visibility="collapsed"
         )
-
         if st.button("🔍 Analyze Headline", use_container_width=True, disabled=not headline.strip()):
             if not headline.strip():
                 st.warning("⚠️ Please enter a headline.")
@@ -239,9 +224,7 @@ def main():
                     st.session_state.current_headline = headline
                     st.session_state.current_prediction = prediction
                     st.session_state.current_confidence = confidence
-
                     st.markdown('<p class="subheader-text">Analysis Results</p>', unsafe_allow_html=True)
-
                     if prediction == "Fake News":
                         st.markdown(f'''
                         <div class="fake-news">
@@ -256,10 +239,8 @@ def main():
                             <p>Our system identified this as likely real.</p>
                         </div>
                         ''', unsafe_allow_html=True)
-
                     st.markdown(f"**Confidence:** {confidence:.1f}%")
                     st.progress(confidence / 100)
-
         # Show feedback buttons if prediction exists
         if st.session_state.current_prediction:
             st.markdown('<p class="subheader-text">Help Improve Our Model</p>', unsafe_allow_html=True)
@@ -275,12 +256,10 @@ def main():
                     st.success("Thank you! Your feedback helps reinforce accurate predictions.")
                     st.session_state.current_prediction = None
                     st.rerun()
-
             with col2:
                 if st.button("❌ Incorrect", use_container_width=True):
                     st.session_state.show_correction_form = True
                     st.rerun()
-
         # Correction form
         if st.session_state.show_correction_form and st.session_state.current_prediction:
             with st.form("correction_form"):
@@ -302,11 +281,9 @@ def main():
                     st.session_state.show_correction_form = False
                     st.session_state.current_prediction = None
                     st.rerun()
-
         # Retraining section
         st.markdown('<p class="subheader-text">Retrain Model</p>', unsafe_allow_html=True)
         st.write("Retrain the model with accumulated feedback:")
-
         # Feedback stats
         correct_count = 0
         feedback_count = 0
@@ -322,7 +299,6 @@ def main():
                     feedback_count = sum(1 for line in f if line.strip())
             except:
                 feedback_count = 0
-
         st.markdown(f"""
         <div style="background: white; padding: 15px; border-radius: 10px; margin: 15px 0;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
@@ -335,14 +311,12 @@ def main():
             </div>
         </div>
         """, unsafe_allow_html=True)
-
         if feedback_count > 0:
             if st.button("🔄 Retrain Model", type="primary", use_container_width=True):
                 with st.spinner("Retraining model..."):
                     try:
                         # Clear cache to reload model after retraining
                         st.cache_resource.clear()
-
                         # ✅ CRITICAL FIX: Use sys.executable instead of "python"
                         result = subprocess.run(
                             [sys.executable, "train.py"],
@@ -361,13 +335,11 @@ def main():
                         st.error(f"❌ Unexpected error: {str(e)}")
         else:
             st.info("No corrections available yet. Provide feedback to enable retraining.")
-
         # Warning
         st.markdown(
             '<h3 style="color: #ff0000; text-align: center;">PRONE TO MISTAKES! PLEASE VERIFY FROM OTHER SOURCES!!!</h3>',
             unsafe_allow_html=True
         )
-
     # TAB 2: Model Insights
     with tab2:
         st.markdown('<p class="subheader-text">Model Performance Metrics</p>', unsafe_allow_html=True)
@@ -404,7 +376,6 @@ def main():
                 <div style="color: #38a169;">↑ 1.0% since last retrain</div>
             </div>
             """, unsafe_allow_html=True)
-
         st.subheader("Confusion Matrix")
         try:
             cm = [[85, 15], [8, 92]]
@@ -419,7 +390,6 @@ def main():
             st.pyplot(fig)
         except Exception as e:
             st.error(f"Error generating confusion matrix: {str(e)}")
-
         st.subheader("Model Improvement Over Time")
         try:
             dates = []
@@ -440,7 +410,6 @@ def main():
             st.plotly_chart(fig, use_container_width=True)
         except Exception as e:
             st.warning("Could not load training history. Train the model to see metrics.")
-
         st.subheader("Key Indicators of Fake News")
         try:
             features = ['breaking', 'shocking', 'secret', 'government', 'cover-up', 'exposed', 'proof', 'truth']
@@ -454,7 +423,6 @@ def main():
             st.pyplot(fig)
         except Exception as e:
             st.info("Feature importance data will appear after model training")
-
         st.subheader("Impact of User Feedback")
         try:
             if feedback_count > 0:
@@ -482,14 +450,12 @@ def main():
                 st.info("Provide feedback on predictions to see how it improves the model.")
         except Exception as e:
             st.error(f"Error displaying feedback impact: {str(e)}")
-
     # TAB 3: About
     with tab3:
         with st.expander("⚙️ Environment Info"):
             st.write("Numpy version:", np.__version__)
             st.write("Pandas version:", pd.__version__)
             st.write("Torch version:", torch.__version__)
-
         st.markdown('<p class="subheader-text">About TruthGuard</p>', unsafe_allow_html=True)
         st.markdown("""
         <div style="background-color: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 25px;">
@@ -500,7 +466,6 @@ def main():
             </p>
         </div>
         """, unsafe_allow_html=True)
-
         st.subheader("How TruthGuard Works")
         st.markdown("""
         <div style="background-color: white; border-radius: 8px; padding: 15px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
@@ -516,7 +481,6 @@ def main():
             <p style="color: #000000;">Every time you provide feedback, our model learns and improves. This community-driven approach makes TruthGuard more accurate with each correction.</p>
         </div>
         """, unsafe_allow_html=True)
-
         st.subheader("Technical Details")
         col1, col2 = st.columns([2, 1])
         with col1:
@@ -571,7 +535,6 @@ def main():
                 </div>
             </div>
             """, unsafe_allow_html=True)
-
         st.subheader("The TruthGuard Team")
         team_cols = st.columns(3)
         with team_cols[0]:
@@ -583,7 +546,6 @@ def main():
                 </div>
             </div>
             """, unsafe_allow_html=True)
-
         st.subheader("Get in Touch")
         st.markdown("""
         <div style="background-color: white; border-radius: 8px; padding: 15px; border: 1px solid #e2e8f0;">
@@ -597,14 +559,56 @@ def main():
             </div>
         </div>
         """, unsafe_allow_html=True)
-
         st.markdown("""
         <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 0.9rem;">
             TruthGuard is an open-source project licensed under MIT. 
             The model is trained on publicly available news datasets with proper attribution.
         </div>
         """, unsafe_allow_html=True)
+# --- Admin/Developer Section (Password Protected) ---
+# Add this section inside your main() function, e.g., just before if __name__ == "__main__":
+with st.expander("🔑 Admin View (Password Protected)"):
+    admin_password = st.text_input("Enter Admin Password:", type="password")
+    # IMPORTANT: Change 'YOUR_SECRET_PASSWORD' to a strong password you only know.
+    if admin_password == "YOUR_SECRET_PASSWORD": # <--- SET YOUR PASSWORD HERE
+        st.success("Access granted!")
+        st.subheader("Raw Feedback Data")
+
+        # Function to load and display JSONL data
+        def display_jsonl_file(file_path, title):
+            file = Path(file_path)
+            st.markdown(f"**{title}** ({file_path})")
+            if file.exists():
+                try:
+                    lines = file.read_text(encoding='utf-8').strip().splitlines()
+                    if lines:
+                        # Parse JSON lines
+                        data = [json.loads(line) for line in lines if line.strip()]
+                        # Convert to DataFrame for better display
+                        df = pd.DataFrame(data)
+                        # Reverse order to show newest first (optional)
+                        df = df.iloc[::-1].reset_index(drop=True)
+                        st.dataframe(df, use_container_width=True)
+
+                         # Simple stats
+                        st.write(f"Total entries: {len(df)}")
+                    else:
+                        st.info(f"The file {file_path} is empty.")
+                except Exception as e:
+                    st.error(f"Error reading {file_path}: {e}")
+            else:
+                st.info(f"The file {file_path} does not exist yet.")
+
+        # Display both files
+        display_jsonl_file('data/feedback.jsonl', "User Corrections (feedback.jsonl)")
+        st.markdown("---")
+        display_jsonl_file('data/correct_predictions.jsonl', "Confirmed Predictions (correct_predictions.jsonl)")
+
+    elif admin_password:
+        st.error("Incorrect password. Access denied.")
+    else:
+        st.info("Enter the admin password to view raw data logs.")
+# --- End of Admin Section ---
 
 if __name__ == "__main__":
     main()
-
