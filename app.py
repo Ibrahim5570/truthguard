@@ -569,8 +569,7 @@ def main():
 # Add this section inside your main() function, e.g., just before if __name__ == "__main__":
 with st.expander("🔑 Admin View (Password Protected)"):
     admin_password = st.text_input("Enter Admin Password:", type="password")
-    # IMPORTANT: Change 'YOUR_SECRET_PASSWORD' to a strong password you only know.
-    if admin_password == "YOUR_SECRET_PASSWORD": # <--- SET YOUR PASSWORD HERE
+    if admin_password == "Hokage_8":
         st.success("Access granted!")
         st.subheader("Raw Feedback Data")
 
@@ -612,3 +611,4 @@ with st.expander("🔑 Admin View (Password Protected)"):
 
 if __name__ == "__main__":
     main()
+
